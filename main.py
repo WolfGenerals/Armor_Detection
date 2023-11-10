@@ -21,11 +21,8 @@ def main(img: Mat) -> Mat:
     return draw
 
 
-# cv2.namedWindow("in")
-# cv2.namedWindow("debug")
-# cv2.namedWindow("out")
 capture = cv2.VideoCapture('/mnt/e/8-11东大2No.4.avi')
-for _ in range(60*60*5+60*40):
+for _ in range(60 * 60 * 5 + 60 * 40):
     capture.read()
 
 while capture.isOpened():
