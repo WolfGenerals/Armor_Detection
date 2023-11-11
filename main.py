@@ -1,35 +1,44 @@
+from typing import Any, Sequence
+
 import cv2
 from cv2 import Mat
+from numpy import ndarray, dtype, generic
 
-from armor import drawRect, getLightPair, getLightImage, getLights
+from armor import getArmor, getLightImage, getLightBar
 
 
 def main(img: Mat) -> Mat:
     imageLights = getLightImage(img)
 
-    contours, _ = cv2.findContours(imageLights, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours: Sequence[Mat] = cv2.findContours(imageLights, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
 
-    rects = getLights(contours)
+    lightBars = getLightBar(contours)
 
     draw = img.copy()
 
-    pair = getLightPair(rects)
-    for p in pair:
-        drawRect(draw, p[0])
-        drawRect(draw, p[1])
+    armors = getArmor(lightBars)
 
+    for armor in armors:
+        armor.draw(draw)
+    for lightBar in lightBars:
+        lightBar.draw(draw)
     return draw
 
 
-capture = cv2.VideoCapture('/mnt/e/8-11东大2No.4.avi')
-for _ in range(60 * 60 * 5 + 60 * 40):
-    capture.read()
+if __name__ == '__main__':
+    cv2.imshow('233', cv2.imread('Blue-5.jpeg'))
+    cv2.imshow('233-g', getLightImage(cv2.imread('Blue-5.jpeg')))
+    cv2.imshow('233-o', main(cv2.imread('Blue-5.jpeg')))
+    cv2.waitKey(1000)
+    capture = cv2.VideoCapture('/mnt/e/8-11东大2No.4.avi')
+    for _ in range(60 * 60 * 5 + 60 * 40):
+        capture.read()
 
-while capture.isOpened():
-    flag, img = capture.read()
-    if not flag:
-        break
-    cv2.imshow("in", img)
-    cv2.imshow("debug", getLightImage(img))
-    cv2.imshow("out", main(img))
-    cv2.waitKey(75)
+    while capture.isOpened():
+        flag, img = capture.read()
+        if not flag:
+            break
+        cv2.imshow("in", img)
+        cv2.imshow("debug", getLightImage(img))
+        cv2.imshow("out", main(img))
+        cv2.waitKey(120)
